@@ -1,0 +1,93 @@
+digraph SuperficieAtaque {
+  graph [rankdir=TB, bgcolor="white", fontname="Arial", fontsize=14,
+         label="Superficie de ataque · Secure CRM (Hito 1 · Equipo rojo)",
+         labelloc=t, pad=0.5, nodesep=0.4, ranksep=0.7];
+  node [fontname="Arial", fontsize=9, shape=box, style="rounded,filled",
+        color="#476487", fillcolor="#eef4fb", margin="0.12,0.08"];
+  edge [fontname="Arial", fontsize=8, color="#50647b", arrowsize=0.65];
+
+  // ── Actores externos ──────────────────────────────────────────────
+  subgraph cluster_ext {
+    label="Límite 1 · cliente (no confiable)";
+    color="#acc4dc"; style="rounded,dashed"; fontname="Arial"; fontsize=10;
+    browser  [label="Navegador / Postman\nusuario de prueba", shape=ellipse, fillcolor="#dce8f5"];
+    attacker [label="Equipo rojo\n(simulando atacante)", shape=ellipse, fillcolor="#fde8e0", color="#c0533a"];
+  }
+
+  // ── WAF ───────────────────────────────────────────────────────────
+  waf [label="WAF · ModSecurity + CRS\nlocalhost:8080\nDetectionOnly", fillcolor="#fff0db", color="#bd8744", shape=box];
+
+  // ── Rutas públicas ────────────────────────────────────────────────
+  subgraph cluster_public {
+    label="Sin autenticación"; color="#d0e8d0"; style="rounded,dashed"; fontname="Arial"; fontsize=9;
+    health [label="GET /api/health\nSalida: {status, service}", fillcolor="#e8f5e9"];
+    login  [label="POST /api/auth/login\nEntrada: {username, password}\nSalida: {token, user} + cookie\n⚠ SQLi · fuerza bruta · error verboso\n⚠ cookie sin HttpOnly/Secure/SameSite",
+            fillcolor="#ffe4e1", color="#c0392b"];
+  }
+
+  // ── Rutas de tickets (cualquier rol) ──────────────────────────────
+  subgraph cluster_tickets {
+    label="Tickets — JWT requerido (cualquier rol)"; color="#dde8f7"; style="rounded,dashed"; fontname="Arial"; fontsize=9;
+    tget    [label="GET /api/tickets?q=\nEntrada: q (búsqueda)\n⚠ SQLi en q · XSS reflejado", fillcolor="#ffe4e1", color="#c0392b"];
+    tgetid  [label="GET /api/tickets/:id\nEntrada: id\n⚠ IDOR sin verificar propietario", fillcolor="#ffe4e1", color="#c0392b"];
+    tpost   [label="POST /api/tickets\nEntrada: campos del ticket\n⚠ viewer puede crear (A01)\n⚠ mass assignment", fillcolor="#ffe4e1", color="#c0392b"];
+    tput    [label="PUT /api/tickets/:id\nEntrada: id + cambios\n⚠ IDOR · viewer edita cualquier ticket", fillcolor="#ffe4e1", color="#c0392b"];
+    tdel    [label="DELETE /api/tickets/:id\nEntrada: id\n⚠ IDOR · cualquier rol borra", fillcolor="#ffe4e1", color="#c0392b"];
+  }
+
+  // ── Rutas de usuarios (cualquier rol; debería ser solo admin) ─────
+  subgraph cluster_users {
+    label="Usuarios — JWT requerido (debería ser solo admin)"; color="#f7e8dd"; style="rounded,dashed"; fontname="Arial"; fontsize=9;
+    uget    [label="GET /api/users\n⚠ cualquier rol lista usuarios\n⚠ expone passwordHash (MD5)", fillcolor="#ffe4e1", color="#c0392b"];
+    ugetid  [label="GET /api/users/:id\nEntrada: id\n⚠ IDOR · expone hash", fillcolor="#ffe4e1", color="#c0392b"];
+    upost   [label="POST /api/users\nEntrada: {username, email, role, password}\n⚠ escalada: role viene del cliente\n⚠ mass assignment", fillcolor="#ffe4e1", color="#c0392b"];
+    uputrol [label="PUT /api/users/:id/role\nEntrada: id + {role}\n⚠ cualquier usuario cambia roles", fillcolor="#ffe4e1", color="#c0392b"];
+  }
+
+  // ── Dashboard ─────────────────────────────────────────────────────
+  dash [label="GET /api/dashboard\nJWT requerido (cualquier rol)\nSalida: métricas de tickets", fillcolor="#f0f0f0"];
+
+  // ── Almacenes de datos ────────────────────────────────────────────
+  subgraph cluster_data {
+    label="Datos (Límite 2 · red interna Docker)"; color="#77a6ce"; style="rounded,dashed"; fontname="Arial"; fontsize=9;
+    sqlite [label="D1 · SQLite\nusuarios · tickets", shape=cylinder, fillcolor="#e8f5ea", color="#6d9e72"];
+    logs   [label="D2 · logs WAF", shape=cylinder, fillcolor="#e8f5ea", color="#6d9e72"];
+  }
+
+  // ── JWT global ────────────────────────────────────────────────────
+  jwt_note [label="JWT global ⚠ CRÍTICO\njwt.decode() sin verificar firma\nCualquier token forgeable\nCVSS 9.8", shape=note, fillcolor="#ffd7d7", color="#c0392b", style="filled"];
+  cors_note [label="CORS global ⚠\nRefleja cualquier Origin\nAllow-Credentials: true\nCWE-942", shape=note, fillcolor="#fff3cd", color="#b8860b", style="filled"];
+
+  // ── Conexiones ────────────────────────────────────────────────────
+  browser  -> waf [label="HTTP localhost:8080\ncruza Límite 1→2"];
+  attacker -> waf [label="payloads de ataque\nSQL, XSS, IDOR, JWT forjado", color="#c0392b", style=dashed];
+
+  waf -> login  [label="POST /api/auth/login"];
+  waf -> health [label="GET /api/health"];
+  waf -> tget   [label="GET /api/tickets"];
+  waf -> tgetid;
+  waf -> tpost;
+  waf -> tput;
+  waf -> tdel;
+  waf -> uget   [label="GET /api/users"];
+  waf -> ugetid;
+  waf -> upost;
+  waf -> uputrol;
+  waf -> dash;
+
+  login  -> sqlite [label="SELECT con SQLi"];
+  tget   -> sqlite [label="SELECT con SQLi"];
+  tgetid -> sqlite;
+  tpost  -> sqlite;
+  tput   -> sqlite;
+  tdel   -> sqlite;
+  uget   -> sqlite [label="SELECT *\nincluye hashes"];
+  ugetid -> sqlite;
+  upost  -> sqlite [label="INSERT role=cliente"];
+  uputrol -> sqlite [label="UPDATE role"];
+  dash   -> sqlite;
+  waf    -> logs;
+
+  jwt_note  -> waf [style=dotted, color="#c0392b", arrowhead=none];
+  cors_note -> waf [style=dotted, color="#b8860b", arrowhead=none];
+}
