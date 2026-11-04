@@ -1,0 +1,35 @@
+digraph SecureCRM {
+  graph [rankdir=LR, bgcolor="white", fontname="Arial", fontsize=16, label="DFD · Secure CRM detrás del WAF (Hito 0–1)", labelloc=t, pad=0.35, nodesep=0.5, ranksep=0.8];
+  node [fontname="Arial", fontsize=10, shape=box, style="rounded,filled", color="#476487", fillcolor="#eef4fb", margin="0.14,0.10"];
+  edge [fontname="Arial", fontsize=9, color="#50647b", arrowsize=0.7];
+
+  subgraph cluster_usuario {
+    label="Límite 1 · dispositivo del usuario";
+    color="#acc4dc"; style="rounded,dashed";
+    browser [label="Navegador / Postman\nusuarios de prueba", shape=box];
+    analyst [label="Equipo azul\nnavegador local", shape=box];
+  }
+
+  subgraph cluster_app {
+    label="Límite 2 · red privada de Docker";
+    color="#77a6ce"; style="rounded,dashed";
+    web [label="Web · Next.js\n:3000 en 127.0.0.1", fillcolor="#e7f3ff"];
+    waf [label="WAF · ModSecurity + CRS\n:8080 en 127.0.0.1", fillcolor="#fff0db", color="#bd8744"];
+    api [label="API · Express\n:4000 solo interna", fillcolor="#e7f3ff"];
+    sqlite [label="D1 · SQLite\nusuarios y tickets", shape=cylinder, fillcolor="#e8f5ea", color="#6d9e72"];
+    logs [label="D2 · logs WAF\nvolumen Docker", shape=cylinder, fillcolor="#e8f5ea", color="#6d9e72"];
+    filebeat [label="Filebeat\nrecolector", fillcolor="#f1eafd"];
+    elastic [label="D3 · Elasticsearch\níndice filebeat-*", shape=cylinder, fillcolor="#e8f5ea", color="#6d9e72"];
+    kibana [label="Kibana\n:5601 en 127.0.0.1", fillcolor="#f1eafd"];
+  }
+
+  browser -> web [label="HTML / JS · GET\ncruza límite 1→2"];
+  browser -> waf [label="API · HTTP local\nlogin, tickets, usuarios\ncruza límite 1→2"];
+  waf -> api [label="proxy HTTP interno"];
+  api -> sqlite [label="consultas SQL"];
+  waf -> logs [label="access + auditoría"];
+  logs -> filebeat [label="lectura de logs"];
+  filebeat -> elastic [label="eventos"];
+  elastic -> kibana [label="búsqueda"];
+  analyst -> kibana [label="Discover · :5601\ncruza límite 1→2"];
+}

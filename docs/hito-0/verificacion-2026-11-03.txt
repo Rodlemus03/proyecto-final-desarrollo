@@ -1,0 +1,26 @@
+Fecha local (Guatemala): 2026-11-03 19:06:56
+Entorno: Secure CRM + WAF + SIEM, Docker Compose desde waf-siem/
+
+OK     Elasticsearch responde (yellow) en http://127.0.0.1:9200
+OK     Kibana está available en http://127.0.0.1:5601
+OK     El WAF responde HTTP 404 en http://127.0.0.1:8080 (no es 502: llega a la app)
+OK     filebeat test output conecta con Elasticsearch
+OK     Filebeat envió 23 eventos al data stream filebeat-*
+
+Web HTTP: 200
+API por WAF HTTP: 200
+Login de prueba: admin
+Tickets de prueba: 12
+API directa en host :4000: cerrado
+Kibana: available
+Eventos waf-access indexados: 23
+
+Servicios activos:
+api
+elasticsearch
+filebeat
+kibana
+waf
+web
+Navegador: login de prueba por la web -> /dashboard, 12 tickets visibles.
+GitHub: etiqueta pública proyecto-final visible en About > Topics.
