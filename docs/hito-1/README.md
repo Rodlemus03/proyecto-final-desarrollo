@@ -72,7 +72,7 @@ Se priorizan tres cadenas: (1) suplantación o inyección en el login → acceso
 
 ### Etapa 5 · Vulnerabilidades del Proyecto DAST
 
-Estos son hallazgos ya descritos en la [guía DAST](../dast/index.html) y visibles en el código actual. La tabla reutiliza ese material como insumo de diseño; el Equipo rojo debe confirmar cuáles documentó en el Proyecto DAST y cuáles llevará como PoC al Hito 2. Aquí no se atribuye una comprobación nueva.
+Estos son hallazgos confirmados contra la instancia local via WAF (`http://localhost:8080`). Ver [hallazgos-dast.md](hallazgos-dast.md) para la evidencia completa de petición y respuesta de cada uno (Davis Roldán, Equipo rojo, 2026-11-04).
 
 | Hallazgo | Ubicación en la aplicación | Flujo del DFD y efecto |
 |---|---|---|
