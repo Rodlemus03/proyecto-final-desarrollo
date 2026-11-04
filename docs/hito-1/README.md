@@ -72,7 +72,7 @@ Se priorizan tres cadenas: (1) suplantación o inyección en el login → acceso
 
 ### Etapa 5 · Vulnerabilidades del Proyecto DAST
 
-Estos son hallazgos ya descritos en la [guía DAST](../dast/index.html) y visibles en el código actual. La tabla reutiliza ese material como insumo de diseño; el Equipo rojo debe confirmar cuáles documentó en el Proyecto DAST y cuáles llevará como PoC al Hito 2. Aquí no se atribuye una comprobación nueva.
+Estos son hallazgos confirmados contra la instancia local via WAF (`http://localhost:8080`). Ver [hallazgos-dast.md](hallazgos-dast.md) para la evidencia completa de petición y respuesta de cada uno (Davis Roldán, Equipo rojo, 2026-11-04).
 
 | Hallazgo | Ubicación en la aplicación | Flujo del DFD y efecto |
 |---|---|---|
@@ -87,13 +87,37 @@ Estos son hallazgos ya descritos en la [guía DAST](../dast/index.html) y visibl
 | Login sin límite de intentos | `apps/api/src/auth.ts` | Ráfagas de peticiones → autenticación y recursos. |
 | Errores detallados | `apps/api/src/auth.ts`, `apps/api/src/index.ts` | Fallas internas → respuesta con SQL o stack. |
 
-## 4. Superficie de ataque · pendiente del Equipo rojo
+## 4. Superficie de ataque · Equipo rojo
 
-Davis Roldán y Julio Lemus deben entregar el mapa de entradas de Secure CRM: rutas y métodos, roles necesarios, datos que entran y salen, límites de confianza del DFD y rutas que corresponden a sus hallazgos del Proyecto DAST. Deben confirmar desde la instancia **local** que la API responde por `http://localhost:8080` y que el puerto `4000` no está publicado al host; cualquier exposición directa se anota como posible bypass del WAF. El mapa se incorpora en esta carpeta como `superficie.svg` o imagen equivalente y se referencia aquí.
+![Mapa de superficie de ataque de Secure CRM](superficie.svg)
 
-También deben identificar al menos tres hallazgos DAST candidatos para sus PoC del Hito 2. Las pruebas ofensivas y su clasificación quedan para ese hito; este documento no afirma que ya se hayan ejecutado.
+[Fuente editable del diagrama](superficie.dot) · [Tabla detallada con entradas, salidas y vulnerabilidades](superficie.md)
 
-La [lista de entrega para el Equipo rojo](PENDIENTE-RED-TEAM.md) resume lo que deben aportar para cerrar esta sección.
+El mapa fue construido a partir del código fuente de `apps/api/src/`. Las rutas, métodos, roles, entradas y salidas se derivaron de los archivos `auth.ts`, `middleware/auth.ts`, `routes/tickets.ts`, `routes/users.ts` y `routes/dashboard.ts`. Los hallazgos se corresponden con las diez vulnerabilidades del tablero DAST de la guía del curso.
+
+**Hallazgo global crítico:** el middleware `authenticate` usa `jwt.decode()` en lugar de `jwt.verify()`, por lo que la firma del token nunca se valida. Cualquier usuario puede forjar un token con el rol que quiera. Esto compromete todas las rutas autenticadas (CVSS 9.8).
+
+**Verificación de puertos confirmada desde el host (Mac con Docker):**
+
+```bash
+# Responde por el WAF — HTTP 200
+curl -s http://localhost:8080/api/health
+
+# Puerto 4000 no publicado — conexión rechazada
+curl -s http://localhost:4000/api/health
+```
+
+El puerto `4000` no está publicado al host en la configuración actual del `docker-compose.yml` (`expose` sin `ports`). No se detectó bypass directo a la API.
+
+**Tres candidatos para los PoC del Hito 2** (derivados del análisis del código y del CVSS):
+
+| Prioridad | Hallazgo | Ruta | CVSS |
+|---|---|---|---|
+| 1 | JWT sin verificación de firma | Middleware / todas las rutas autenticadas | 9.8 Crítica |
+| 2 | SQL Injection en login | `POST /api/auth/login` | 8.1 Alta |
+| 3 | IDOR en tickets | `GET /PUT /DELETE /api/tickets/:id` | 8.1 Alta |
+
+La [lista de entrega para el Equipo rojo](PENDIENTE-RED-TEAM.md) queda cubierta con este mapa. Los PoC, escaneos ZAP/Burp, cálculo de CVSS completo y la clasificación final corresponden al Hito 2.
 
 ## 5. Requisitos de seguridad verificables
 
