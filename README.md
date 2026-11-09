@@ -10,6 +10,7 @@ El entorno del Proyecto Final está en [`waf-siem/`](waf-siem/README.md). Se ini
 
 - [Hito 0 · roles, entorno y verificación](docs/hito-0/README.md)
 - [Hito 1 · DFD, STRIDE, PASTA y requisitos](docs/hito-1/README.md)
+- [Hito 2 · pipeline DevSecOps y aporte del Equipo azul](docs/hito-2/README.md)
 
 El `docker-compose.yml` de la raíz corresponde al laboratorio DAST anterior. Para el Proyecto Final usen `waf-siem/docker-compose.yml`.
 
