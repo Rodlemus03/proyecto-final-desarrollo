@@ -17,16 +17,16 @@ El baseline de ZAP es pasivo y solo recorre lo alcanzable desde la página públ
 
 ## Evidencia de una corrida real
 
-Corrida de la rama `codex/hito-2-blue-team` del **9 de noviembre de 2026**, commit [`4cff3bc`](https://github.com/mar22266/proyecto-final-desarrollo/commit/4cff3bc1dbacc0a41c457f6f5cd90dc733f8b712): [DevSecOps #42665284624](https://github.com/mar22266/proyecto-final-desarrollo/actions/runs/42665284624). Los cuatro jobs terminaron correctamente y se publicaron los cuatro artefactos después de validar los reportes y el resultado técnico de ZAP. La [corrida anterior de `main`](https://github.com/mar22266/proyecto-final-desarrollo/actions/runs/42656069281) sirve como línea base de comparación; las métricas se mantuvieron.
+Corrida completa del PR el **9 de noviembre de 2026**, commit [`a5e8073`](https://github.com/mar22266/proyecto-final-desarrollo/commit/a5e8073afddb2d207d340489acd031f4a487cefe): [DevSecOps #42673196820](https://github.com/mar22266/proyecto-final-desarrollo/actions/runs/42673196820). Los cuatro jobs terminaron correctamente y se publicaron los cuatro artefactos. La [corrida de la rama anterior al ajuste de Dockerfiles](https://github.com/mar22266/proyecto-final-desarrollo/actions/runs/42665284624) sirve como línea base de comparación.
 
 | Control | Resultado observado en el reporte | Evidencia |
 |---|---|---|
-| SAST | 16 resultados en SARIF; el paso del gate encontró **2 `ERROR`**, ambos por ejecutar contenedores sin `USER` explícito. | [Artefacto Semgrep](https://github.com/mar22266/proyecto-final-desarrollo/actions/runs/42665284624/artifacts/13695504647) |
-| SCA | 159 dependencias de producción; 4 avisos `low`, 24 `moderate`, **19 `high` y 6 `critical`**. El gate contó 25 `high/critical`. | [Artefacto SCA](https://github.com/mar22266/proyecto-final-desarrollo/actions/runs/42665284624/artifacts/13695044634) |
-| SBOM | CycloneDX 1.6; 308 componentes y 124 relaciones de dependencia en el JSON generado. | [Artefacto SBOM](https://github.com/mar22266/proyecto-final-desarrollo/actions/runs/42665284624/artifacts/13697165020) |
-| ZAP baseline | 12 tipos de alerta: 0 de riesgo alto, 2 medio, 6 bajo y 4 informativas. Entre las medias figuran CSP y protección contra *clickjacking* ausentes. | [Artefacto ZAP](https://github.com/mar22266/proyecto-final-desarrollo/actions/runs/42665284624/artifacts/13696556223) |
+| SAST | 14 resultados en SARIF; el paso del gate encontró **0 `ERROR`** después de ajustar los Dockerfiles. | [Artefacto Semgrep](https://github.com/mar22266/proyecto-final-desarrollo/actions/runs/42673196820/artifacts/13698503098) |
+| SCA | 159 dependencias de producción; 4 avisos `low`, 24 `moderate`, **19 `high` y 6 `critical`**. El gate contó 25 `high/critical`. | [Artefacto SCA](https://github.com/mar22266/proyecto-final-desarrollo/actions/runs/42673196820/artifacts/13699696636) |
+| SBOM | CycloneDX 1.6; 308 componentes y 124 relaciones de dependencia en el JSON generado. | [Artefacto SBOM](https://github.com/mar22266/proyecto-final-desarrollo/actions/runs/42673196820/artifacts/13700370165) |
+| ZAP baseline | 12 tipos de alerta: 0 de riesgo alto, 2 medio, 6 bajo y 4 informativas. Entre las medias figuran CSP y protección contra *clickjacking* ausentes. | [Artefacto ZAP](https://github.com/mar22266/proyecto-final-desarrollo/actions/runs/42673196820/artifacts/13698398427) |
 
-**Cómo leer el verde de Actions:** `SECURITY_GATE: "reporte"` permite que los pasos del gate registren hallazgos sin hacer fallar el job. En esta corrida, los pasos de SAST y SCA devolvieron código 1, aunque sus jobs concluyeron `success`. Por tanto, `success` confirma que los controles corrieron y publicaron evidencia; no significa que el código haya pasado los umbrales de bloqueo.
+**Cómo leer el verde de Actions:** `SECURITY_GATE: "reporte"` permite que los pasos del gate registren hallazgos sin hacer fallar el job. En esta corrida, el paso de SCA devolvió código 1 por sus 25 avisos `high/critical`, aunque el job concluyó `success`; Semgrep y ZAP sí quedaron bajo sus umbrales. Por tanto, `success` confirma que los controles corrieron y publicaron evidencia; no significa que todos los hallazgos se hayan remediado.
 
 ### Lectura inicial de los hallazgos del gate
 
@@ -40,19 +40,19 @@ Los **25 avisos `high/critical`** de SCA son avisos del inventario de dependenci
 | `proxy-addr`, `body-parser` | Transitivas de `express` en `apps/api` | 1 | 1 | Revisar la cadena de Express y sus versiones resueltas en el lockfile. |
 | `postcss`, `source-map-js` | Transitivas de `next` en `apps/web` | 0 | 3 | Revisar si la actualización de Next corrige también la cadena transitiva. |
 
-El gate de Semgrep encontró **dos `ERROR`** por la ausencia de un `USER` explícito en [`apps/api/Dockerfile`](../../apps/api/Dockerfile) y [`apps/web/Dockerfile`](../../apps/web/Dockerfile). Esto describe la ejecución de los contenedores; no se atribuye a un PoC de aplicación del Equipo rojo. El ajuste requirió comprobar permisos de la base SQLite, del build de Next y del arranque. El baseline pasivo de ZAP no tuvo alertas altas, aunque sí señaló cabeceras faltantes de riesgo medio.
+El gate de Semgrep encontró **dos `ERROR` en la línea base** por la ausencia de un `USER` explícito en [`apps/api/Dockerfile`](../../apps/api/Dockerfile) y [`apps/web/Dockerfile`](../../apps/web/Dockerfile). Esto describe la ejecución de los contenedores; no se atribuye a un PoC de aplicación del Equipo rojo. El baseline pasivo de ZAP no tuvo alertas altas, aunque sí señaló cabeceras faltantes de riesgo medio.
 
 ### Ajuste del Equipo azul tras la línea base
 
-El commit [`87600ac`](https://github.com/mar22266/proyecto-final-desarrollo/commit/87600acd512521b7c1f397d724967f52dc7df9c1) hace que API y web arranquen como el usuario `node`. El Dockerfile de la API da permisos de escritura a `apps/api/data` para la semilla y SQLite; el de la web da permisos a `.next` para la caché. En la [corrida del PR](https://github.com/mar22266/proyecto-final-desarrollo/actions/runs/42672235435), Semgrep encontró **0 `ERROR`** y el job de DAST construyó ambas imágenes, verificó que la web y la API respondieran y completó el baseline de ZAP. GitHub tuvo errores internos al programar algunos jobs en esa corrida; esos errores no provinieron del código ni de los escaneos y requieren una corrida completa adicional para tener el estado global verde.
+El commit [`87600ac`](https://github.com/mar22266/proyecto-final-desarrollo/commit/87600acd512521b7c1f397d724967f52dc7df9c1) hace que API y web arranquen como el usuario `node`. El Dockerfile de la API da permisos de escritura a `apps/api/data` para la semilla y SQLite; el de la web da permisos a `.next` para la caché. En la corrida completa enlazada arriba, Semgrep encontró **0 `ERROR`** y el job de DAST construyó ambas imágenes, verificó que la web y la API respondieran y completó el baseline de ZAP.
 
 ## Umbral del security gate
 
 El umbral configurado y propuesto al grupo para este laboratorio es **cero hallazgos de severidad `ERROR` en Semgrep, cero vulnerabilidades `high/critical` en dependencias de producción y cero alertas de riesgo alto en el ZAP baseline**. El SBOM debe generarse como artefacto, pero no tiene un umbral de vulnerabilidades propio.
 
-| Control | Umbral y razón | Línea base del 9 de noviembre |
+| Control | Umbral y razón | Línea base → corrida actual |
 |---|---|---|
-| Semgrep | Cualquier `ERROR` exige revisión porque indica un riesgo de código o configuración de alta severidad. | 2: superaría el gate. |
+| Semgrep | Cualquier `ERROR` exige revisión porque indica un riesgo de código o configuración de alta severidad. | 2 → 0: ahora pasa el gate. |
 | `pnpm audit --prod` | Un aviso `high` o `critical` en dependencias usadas al ejecutar la app exige remediación o una excepción documentada. Los avisos `low/moderate` quedan visibles en el reporte. | 25: superaría el gate. |
 | ZAP baseline | Una alerta de riesgo alto en páginas públicas exige revisión. Las demás se conservan como evidencia para priorizar. | 0: pasaría el gate. |
 
@@ -75,4 +75,4 @@ No se atribuyen al Equipo rojo los reportes del baseline automático ni se prese
 
 ## Uso de IA en esta entrega
 
-Se usó **Codex (OpenAI)** para analizar el workflow y los artefactos de la corrida, proponer validaciones de reportes y redactar esta línea base. La solicitud fue avanzar con el Hito 2 del Equipo azul. Los cambios generados son el ajuste de fiabilidad en `devsecops.yml` y esta documentación. El grupo debe revisar el diff y la nueva corrida antes de integrar la rama; no se han agregado dependencias ni secretos.
+Se usó **Codex (OpenAI)** para analizar el workflow y los artefactos de la corrida, proponer validaciones de reportes, ajustar los Dockerfiles y redactar esta línea base. La solicitud fue avanzar con el Hito 2 del Equipo azul. Los cambios generados son el ajuste de fiabilidad en `devsecops.yml`, el arranque de API y web como `node` y esta documentación. El grupo debe revisar el diff y la corrida antes de integrar la rama; no se han agregado dependencias ni secretos.
