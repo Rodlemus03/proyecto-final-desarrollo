@@ -467,12 +467,13 @@ Authorization: Bearer &lt;token de viewer&gt;
                     decenas de valores, pásalo a Intruder y marca el campo con
                     <span class="kbd">§</span> (paso 5).
                   </p>
-                  <!-- <figure class="shot">
-                <div class="box">
-                  <div class="l">Burp Repeater · SQLi en login</div>
-                  <div class="s">Pendiente: Repeater con request y response</div>
-                </div>
-              </figure> -->
+                  <figure class="shot">
+                    <img
+                      src="../shots/burp/repeater-sqli.png"
+                      alt="Burp Repeater con POST /api/auth/login, payload admin'-- y respuesta con token de admin"
+                    />
+                    <figcaption>Burp Repeater · SQLi en login — el payload <code>admin'--</code> devuelve token de admin sin contraseña válida</figcaption>
+                  </figure>
                 </div>
               </div>
               <div class="step">
@@ -486,6 +487,20 @@ Authorization: Bearer &lt;token de viewer&gt;
                     cambia el rol a <span class="kbd">admin</span> y reenvía. Si
                     el servidor lo acepta, no verifica la firma.
                   </p>
+                  <figure class="shot">
+                    <img
+                      src="../shots/burp/repeater-idor.png"
+                      alt="Burp Repeater con GET /api/tickets/1 usando token viewer — respuesta 200 con datos completos del ticket"
+                    />
+                    <figcaption>Burp Repeater · IDOR — token <code>viewer</code> accede a ticket ajeno y recibe datos completos (200 OK)</figcaption>
+                  </figure>
+                  <figure class="shot">
+                    <img
+                      src="../shots/burp/repeater-jwt-forged.png"
+                      alt="Burp Repeater con GET /api/users usando JWT forjado con role:admin y firma AAAA — respuesta 200 con lista de usuarios"
+                    />
+                    <figcaption>Burp Repeater · JWT forjado — token <code>viewer</code> con <code>role:admin</code> y firma falsa aceptado; devuelve lista completa de usuarios (200 OK)</figcaption>
+                  </figure>
                 </div>
               </div>
               <div class="step">
@@ -502,14 +517,13 @@ Authorization: Bearer &lt;token de viewer&gt;
                     <span class="kbd">Length</span>: la respuesta distinta
                     delata la contraseña.
                   </p>
-                  <!-- <figure class="shot">
-                <div class="box">
-                  <div class="l">Burp Intruder · Positions + Resultados</div>
-                  <div class="s">
-                    Pendiente: Positions, Payloads y resultados
-                  </div>
-                </div>
-              </figure> -->
+                  <figure class="shot">
+                    <img
+                      src="../shots/burp/intruder-results.png"
+                      alt="Burp Intruder Results — Admin123! devuelve 200 con Length 881, el resto 401 con Length 411"
+                    />
+                    <figcaption>Burp Intruder · Resultados — <code>Admin123!</code> (200, 881 B) se distingue del resto (401, 411 B), confirmando fuerza bruta sin límite de intentos</figcaption>
+                  </figure>
                 </div>
               </div>
             </div>
