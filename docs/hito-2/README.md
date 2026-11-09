@@ -28,6 +28,20 @@ Corrida de la rama `codex/hito-2-blue-team` del **9 de noviembre de 2026**, comm
 
 **Cómo leer el verde de Actions:** `SECURITY_GATE: "reporte"` permite que los pasos del gate registren hallazgos sin hacer fallar el job. En esta corrida, los pasos de SAST y SCA devolvieron código 1, aunque sus jobs concluyeron `success`. Por tanto, `success` confirma que los controles corrieron y publicaron evidencia; no significa que el código haya pasado los umbrales de bloqueo.
 
+### Lectura inicial de los hallazgos del gate
+
+Los **25 avisos `high/critical`** de SCA son avisos del inventario de dependencias, no 25 explotaciones confirmadas. El JSON del artefacto muestra estas rutas de dependencia:
+
+| Paquete afectado | Ruta y versión directa del proyecto | Avisos `critical` | Avisos `high` | Prioridad de revisión |
+|---|---|---:|---:|---|
+| `next` | `apps/web` → `next@14.2.15` | 4 | 11 | Revisar qué avisos aplican a las funciones usadas y planificar actualización compatible. |
+| `lodash` | `apps/api` → `lodash@4.17.11` | 1 | 3 | Revisar el uso de Lodash y una versión corregida. |
+| `jsonwebtoken` | `apps/api` → `jsonwebtoken@8.5.1` | 0 | 1 | Revisar actualización junto con la corrección de verificación de firma prevista en H4. |
+| `proxy-addr`, `body-parser` | Transitivas de `express` en `apps/api` | 1 | 1 | Revisar la cadena de Express y sus versiones resueltas en el lockfile. |
+| `postcss`, `source-map-js` | Transitivas de `next` en `apps/web` | 0 | 3 | Revisar si la actualización de Next corrige también la cadena transitiva. |
+
+El gate de Semgrep encontró **dos `ERROR`** por la ausencia de un `USER` explícito en [`apps/api/Dockerfile`](../../apps/api/Dockerfile) y [`apps/web/Dockerfile`](../../apps/web/Dockerfile). Esto describe la ejecución de los contenedores; no se atribuye a un PoC de aplicación del Equipo rojo. Antes de cambiar los Dockerfiles hay que comprobar permisos de la base SQLite, del build de Next y del arranque. El baseline pasivo de ZAP no tuvo alertas altas, aunque sí señaló cabeceras faltantes de riesgo medio.
+
 ## Umbral del security gate
 
 El umbral configurado y propuesto al grupo para este laboratorio es **cero hallazgos de severidad `ERROR` en Semgrep, cero vulnerabilidades `high/critical` en dependencias de producción y cero alertas de riesgo alto en el ZAP baseline**. El SBOM debe generarse como artefacto, pero no tiene un umbral de vulnerabilidades propio.
