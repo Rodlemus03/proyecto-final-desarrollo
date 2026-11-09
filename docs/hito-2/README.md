@@ -40,7 +40,11 @@ Los **25 avisos `high/critical`** de SCA son avisos del inventario de dependenci
 | `proxy-addr`, `body-parser` | Transitivas de `express` en `apps/api` | 1 | 1 | Revisar la cadena de Express y sus versiones resueltas en el lockfile. |
 | `postcss`, `source-map-js` | Transitivas de `next` en `apps/web` | 0 | 3 | Revisar si la actualización de Next corrige también la cadena transitiva. |
 
-El gate de Semgrep encontró **dos `ERROR`** por la ausencia de un `USER` explícito en [`apps/api/Dockerfile`](../../apps/api/Dockerfile) y [`apps/web/Dockerfile`](../../apps/web/Dockerfile). Esto describe la ejecución de los contenedores; no se atribuye a un PoC de aplicación del Equipo rojo. Antes de cambiar los Dockerfiles hay que comprobar permisos de la base SQLite, del build de Next y del arranque. El baseline pasivo de ZAP no tuvo alertas altas, aunque sí señaló cabeceras faltantes de riesgo medio.
+El gate de Semgrep encontró **dos `ERROR`** por la ausencia de un `USER` explícito en [`apps/api/Dockerfile`](../../apps/api/Dockerfile) y [`apps/web/Dockerfile`](../../apps/web/Dockerfile). Esto describe la ejecución de los contenedores; no se atribuye a un PoC de aplicación del Equipo rojo. El ajuste requirió comprobar permisos de la base SQLite, del build de Next y del arranque. El baseline pasivo de ZAP no tuvo alertas altas, aunque sí señaló cabeceras faltantes de riesgo medio.
+
+### Ajuste del Equipo azul tras la línea base
+
+El commit [`87600ac`](https://github.com/mar22266/proyecto-final-desarrollo/commit/87600acd512521b7c1f397d724967f52dc7df9c1) hace que API y web arranquen como el usuario `node`. El Dockerfile de la API da permisos de escritura a `apps/api/data` para la semilla y SQLite; el de la web da permisos a `.next` para la caché. En la [corrida del PR](https://github.com/mar22266/proyecto-final-desarrollo/actions/runs/42672235435), Semgrep encontró **0 `ERROR`** y el job de DAST construyó ambas imágenes, verificó que la web y la API respondieran y completó el baseline de ZAP. GitHub tuvo errores internos al programar algunos jobs en esa corrida; esos errores no provinieron del código ni de los escaneos y requieren una corrida completa adicional para tener el estado global verde.
 
 ## Umbral del security gate
 
