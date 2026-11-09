@@ -17,14 +17,14 @@ El baseline de ZAP es pasivo y solo recorre lo alcanzable desde la página públ
 
 ## Evidencia de una corrida real
 
-Corrida de `main` del **9 de noviembre de 2026**, commit [`7f9aa4e`](https://github.com/mar22266/proyecto-final-desarrollo/commit/7f9aa4e9bed7e948d7e8984406ce6ba5ed4cc130): [DevSecOps #42656069281](https://github.com/mar22266/proyecto-final-desarrollo/actions/runs/42656069281). Los cuatro jobs terminaron correctamente y se publicaron los cuatro artefactos. Estos resultados son una línea base del código anterior a los ajustes de fiabilidad de este documento; la siguiente corrida de la rama debe confirmar esos ajustes.
+Corrida de la rama `codex/hito-2-blue-team` del **9 de noviembre de 2026**, commit [`4cff3bc`](https://github.com/mar22266/proyecto-final-desarrollo/commit/4cff3bc1dbacc0a41c457f6f5cd90dc733f8b712): [DevSecOps #42665284624](https://github.com/mar22266/proyecto-final-desarrollo/actions/runs/42665284624). Los cuatro jobs terminaron correctamente y se publicaron los cuatro artefactos después de validar los reportes y el resultado técnico de ZAP. La [corrida anterior de `main`](https://github.com/mar22266/proyecto-final-desarrollo/actions/runs/42656069281) sirve como línea base de comparación; las métricas se mantuvieron.
 
 | Control | Resultado observado en el reporte | Evidencia |
 |---|---|---|
-| SAST | 16 resultados en SARIF; el paso del gate encontró **2 `ERROR`**, ambos por ejecutar contenedores sin `USER` explícito. | [Artefacto Semgrep](https://github.com/mar22266/proyecto-final-desarrollo/actions/runs/42656069281/artifacts/13693100224) |
-| SCA | 159 dependencias de producción; 4 avisos `low`, 24 `moderate`, **19 `high` y 6 `critical`**. El gate contó 25 `high/critical`. | [Artefacto SCA](https://github.com/mar22266/proyecto-final-desarrollo/actions/runs/42656069281/artifacts/13692166062) |
-| SBOM | CycloneDX 1.6; 308 componentes y 124 relaciones de dependencia en el JSON generado. | [Artefacto SBOM](https://github.com/mar22266/proyecto-final-desarrollo/actions/runs/42656069281/artifacts/13691054502) |
-| ZAP baseline | 12 tipos de alerta: 0 de riesgo alto, 2 medio, 6 bajo y 4 informativas. Entre las medias figuran CSP y protección contra *clickjacking* ausentes. | [Artefacto ZAP](https://github.com/mar22266/proyecto-final-desarrollo/actions/runs/42656069281/artifacts/13691054930) |
+| SAST | 16 resultados en SARIF; el paso del gate encontró **2 `ERROR`**, ambos por ejecutar contenedores sin `USER` explícito. | [Artefacto Semgrep](https://github.com/mar22266/proyecto-final-desarrollo/actions/runs/42665284624/artifacts/13695504647) |
+| SCA | 159 dependencias de producción; 4 avisos `low`, 24 `moderate`, **19 `high` y 6 `critical`**. El gate contó 25 `high/critical`. | [Artefacto SCA](https://github.com/mar22266/proyecto-final-desarrollo/actions/runs/42665284624/artifacts/13695044634) |
+| SBOM | CycloneDX 1.6; 308 componentes y 124 relaciones de dependencia en el JSON generado. | [Artefacto SBOM](https://github.com/mar22266/proyecto-final-desarrollo/actions/runs/42665284624/artifacts/13697165020) |
+| ZAP baseline | 12 tipos de alerta: 0 de riesgo alto, 2 medio, 6 bajo y 4 informativas. Entre las medias figuran CSP y protección contra *clickjacking* ausentes. | [Artefacto ZAP](https://github.com/mar22266/proyecto-final-desarrollo/actions/runs/42665284624/artifacts/13696556223) |
 
 **Cómo leer el verde de Actions:** `SECURITY_GATE: "reporte"` permite que los pasos del gate registren hallazgos sin hacer fallar el job. En esta corrida, los pasos de SAST y SCA devolvieron código 1, aunque sus jobs concluyeron `success`. Por tanto, `success` confirma que los controles corrieron y publicaron evidencia; no significa que el código haya pasado los umbrales de bloqueo.
 
@@ -48,7 +48,7 @@ Los controles automáticos dan una señal parcial sobre los [requisitos de segur
 
 ## Evidencia pendiente para cerrar H2 completo
 
-- Validar la corrida de Actions de esta rama y conservar su enlace, así como el artefacto SBOM actualizado.
+- Conservar la corrida de Actions de esta rama y el artefacto SBOM enlazados arriba; agregar las capturas de la corrida y del artefacto que pide la guía visual antes de la entrega en Canvas.
 - Equipo rojo: guardar en `docs/hito-2/` el reporte de ZAP contra `localhost:8080`, las parejas petición/respuesta de **al menos tres PoC** en Burp, la clasificación y el CVSS justificado métrica por métrica.
 - Equipo rojo: repetir los PoC confirmados en Postman y anotar hora, ruta y resultado para que el Equipo azul pueda encontrarlos en Kibana durante H3.
 - Grupo: revisar conjuntamente el umbral anterior y registrar cualquier excepción con hallazgo, justificación, responsable y fecha de revisión.

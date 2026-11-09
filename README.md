@@ -4,7 +4,7 @@
 
 # Secure CRM — Laboratorio OWASP (DAST)
 
-## Proyecto Final Integrador · Hitos 0 y 1
+## Proyecto Final Integrador · Hitos 0 a 2
 
 El entorno del Proyecto Final está en [`waf-siem/`](waf-siem/README.md). Se inicia con Docker Compose desde esa carpeta: levanta la web, la API detrás de ModSecurity, Filebeat, Elasticsearch y Kibana. La API se consulta a través del WAF en `http://localhost:8080`; la interfaz está en `http://localhost:3000`.
 
