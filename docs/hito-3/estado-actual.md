@@ -2,6 +2,8 @@
 
 Revisión: 17 de noviembre de 2026. Este registro actualiza la [revisión del 10 de noviembre](cierre-equipo-azul.md) y distingue la línea base anterior a las correcciones de Hito 4.
 
+Una [verificación técnica adicional](verificacion-tecnica-2026-11-17.md) repitió las tres PoC por el WAF local y correlacionó sus respuestas con eventos de Elasticsearch. Se ejecutó en una sola sesión técnica y no sustituye la demo simultánea de ambos equipos.
+
 | Criterio | Evidencia | Estado |
 |---|---|---|
 | Data view y eventos | `filebeat-*`, `waf-audit` y `app-security` en [`kibana-export.ndjson`](../../waf-siem/kibana-export.ndjson). | Documentado. |
