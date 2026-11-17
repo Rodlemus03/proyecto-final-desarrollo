@@ -1,4 +1,4 @@
-import { describe, it, expect, beforeAll } from 'vitest';
+import { describe, it, expect } from 'vitest';
 import request from 'supertest';
 import jwt from 'jsonwebtoken';
 import { createApp } from '../app';
@@ -22,8 +22,17 @@ describe('PoC-02 SQLi en login (regresión)', () => {
     const res = await request(app)
       .post('/api/auth/login')
       .send({ username: "admin' OR 1=1 --", password: 'x' });
-    // Tras el fix: 400 o 401. Antes del fix: 200 (bypass de autenticación).
-    expect(res.status).not.toBe(200);
+    expect(res.status).toBe(401);
+    expect(res.body).not.toHaveProperty('token');
+  });
+
+  it('permite el ingreso con credenciales válidas', async () => {
+    const res = await request(app)
+      .post('/api/auth/login')
+      .send({ username: 'viewer', password: 'viewer' });
+    expect(res.status).toBe(200);
+    expect(res.body).toHaveProperty('token');
+    expect(res.body.user.role).toBe('viewer');
   });
 });
 
@@ -56,5 +65,15 @@ describe('PoC-03 IDOR en tickets (regresión)', () => {
       .set('Authorization', `Bearer ${token}`);
     // Tras el fix: 403. Antes del fix: 200 (cualquier usuario lee cualquier ticket).
     expect(res.status).toBe(403);
+  });
+
+  it('admin conserva acceso al ticket', async () => {
+    const admin = db.prepare('SELECT * FROM users WHERE username=?').get('admin') as any;
+    const token = jwt.sign({ sub: admin.id, username: admin.username, role: admin.role }, SECRET);
+    const res = await request(app)
+      .get(`/api/tickets/${adminTicketId()}`)
+      .set('Authorization', `Bearer ${token}`);
+    expect(res.status).toBe(200);
+    expect(res.body.id).toBe(adminTicketId());
   });
 });
