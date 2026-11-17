@@ -15,6 +15,8 @@ La [corrida de `main`](evidencia-pipeline-2026-11-10.md) confirma que los cuatro
 
 ## Decisión del grupo
 
+**Actualización posterior a H4 (17 de noviembre):** el [SCA actual](sca-2026-11-17.md) registra 19 avisos high y 6 critical. La aceptación temporal indicada abajo llegaba hasta H4 y no cubre automáticamente el estado posterior. El gate permanece en `reporte`; falta que el grupo resuelva los avisos o apruebe excepciones concretas antes de activar `bloqueo` o usar la aplicación fuera del laboratorio.
+
 El grupo revisó el umbral propuesto y acordó adoptarlo sin modificaciones para el cierre de Hito 3. Los hallazgos SCA actuales son conocidos y corresponden a dependencias del entorno de laboratorio; se aceptan como riesgo temporal hasta las correcciones de H4.
 
 | Decisión | Estado | Responsable | Fecha |
