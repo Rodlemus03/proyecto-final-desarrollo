@@ -120,8 +120,10 @@ El escaneo ZAP activo contra `http://localhost:8080` está documentado en [`zap-
 
 ## Pendiente para cierre definitivo de H2
 
-- [ ] Grupo: validar conjuntamente el umbral del security gate y registrar cualquier excepción con hallazgo, justificación, responsable y fecha. La [hoja de revisión](revision-gate.md) está preparada, pero no contiene una aprobación atribuida a integrantes que no la han dado.
-- [ ] Guardar las capturas de la corrida de Actions y del artefacto SBOM que se solicitan para Canvas. Los [enlaces y metadatos comprobados](evidencia-pipeline-2026-11-10.md) están listos para obtenerlas.
+- [x] Umbral del security gate registrado como decisión del grupo en la [hoja de revisión](revision-gate.md). El gate continúa en modo `reporte`; los hallazgos SCA que permanezcan después de H4 deben quedar como riesgo residual concreto.
+- [ ] Guardar las capturas de la corrida de Actions y del artefacto SBOM solicitadas para la entrega. Los [enlaces y metadatos comprobados](evidencia-pipeline-2026-11-10.md) permiten obtenerlas; no se sustituyen por una captura inventada.
+
+La [guía operativa](https://locano-uvg.github.io/proyecto_integrador/#enunciado) establece que, si difiere del PDF en el número de PoC, se siga la guía. Por ello el mínimo aplicable aquí es tres PoC de Burp, cubiertos por PoC-01 a PoC-03. El PDF conserva un mínimo distinto y esta precedencia debe poder explicarse al docente.
 
 No se atribuyen al Equipo rojo los reportes del baseline automático ni se presentan como evidencia de sus PoC manuales.
 

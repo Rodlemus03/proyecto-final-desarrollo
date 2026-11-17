@@ -1,5 +1,7 @@
 # Cierre del Hito 3 · Equipo azul
 
+> Revisión histórica del 10 de noviembre. Consultar el [estado actualizado](estado-actual.md) y la [repetición del Equipo rojo](demo-purple-team.md) antes de usar esta lista como cierre.
+
 Revisión del **10 de noviembre de 2026** contra el PDF original del proyecto, el [enunciado web](https://locano-uvg.github.io/proyecto_integrador/#h3) y la [guía del Equipo azul](https://locano-uvg.github.io/proyecto_integrador/blue-team/). Este registro distingue configuración comprobada, evidencia que falta capturar y actividades de la demo conjunta.
 
 La [matriz de trazabilidad de Hito 3](README.md) enlaza cada operación del [DFD detallado de Hito 1](../hito-1/dfd-casos.svg) con las PoC de Hito 2, las detecciones de este hito y los límites de bloqueo observados.

@@ -1,5 +1,11 @@
 # Hito 3 · Detección y respuesta del Equipo azul
 
+**Estado actualizado:** [revisión del 17 de noviembre](estado-actual.md). Las tablas y pruebas de esta página conservan resultados de la línea base anterior a Hito 4.
+
+**Estado actualizado:** [revisión del 17 de noviembre](estado-actual.md). Las tablas y pruebas de esta página conservan resultados de la línea base anterior a Hito 4.
+
+> **Cronología:** las pruebas y respuestas `200` de esta página corresponden a la línea base anterior a Hito 4. El [registro del 17 de noviembre](demo-purple-team.md) añade las tres repeticiones con WAF en `On`: SQLi obtuvo `403` y evento `DET-01`; JWT e IDOR generaron `DET-02` y `DET-03`, respectivamente. Después, Hito 4 corrigió ambos fallos de la API. No se ha documentado una demo en vivo con participación simultánea de los dos equipos.
+
 La [lista de cierre del Equipo azul](cierre-equipo-azul.md) compara cada requisito de la guía con la evidencia disponible y la parte pendiente de la demo conjunta.
 
 ## Trazabilidad de los casos de negocio
@@ -76,9 +82,9 @@ Pruebas ejecutadas el **2026-11-10 UTC** contra `http://127.0.0.1:8080`, sin usa
 | JWT de `viewer` con payload alterado a `role:admin`, conservando la firma | `200`; Filebeat indexó `jwt_invalid_signature` cerca de `18:28:16Z` |
 | Lectura de `/api/tickets/1` por `viewer` | `200`; Filebeat indexó `ticket_foreign_access` cerca de `18:28:16Z` |
 
-El `200` de JWT e IDOR es una **limitación comprobada**, no un bloqueo exitoso. El CRS analiza contenido HTTP, pero no valida la firma criptográfica de un JWT ni consulta la propiedad de un ticket en la base de datos. Bloquear indiscriminadamente `/api/users` o los IDs de tickets impediría funciones legítimas y sería un falso positivo. La remediación de ambos fallos en la API y su regresión corresponden a H4. Así, la condición de la guía que pide `403` para todos los PoC aún no se cumple para esos dos ataques; debe indicarse en la demo y en el informe, no ocultarse.
+El `200` de JWT e IDOR en estas pruebas es una **limitación histórica del WAF**, no un bloqueo exitoso. El CRS analiza HTTP, pero no valida firmas JWT ni consulta la propiedad de un ticket. Bloquear indiscriminadamente `/api/users` o identificadores de tickets causaría falsos positivos. La [guía de la demo](https://locano-uvg.github.io/proyecto_integrador/blue-team/#demo) pide mostrar al menos un PoC detectado y bloqueado con `403`; SQLi cumple ese recorrido. Las otras dos PoC se detectaron, y su contención se implementó en la API en H4.
 
-El enunciado original en PDF indica **al menos cuatro vulnerabilidades explotadas en H2** y ejemplifica las tres detecciones de H3 con SQLi, XSS y ráfagas o escaneo por IP. Este repositorio documenta por ahora tres PoC de Burp; la cuarta depende del Equipo rojo. `DET-04` y `DET-05` preparan cobertura WAF adicional, pero sus pruebas locales no sustituyen la repetición de un ataque real del Equipo rojo. Además, el PDF usa Juice Shop como aplicación de referencia, mientras este repositorio usa Secure CRM: el grupo debe confirmar con el docente que esta sustitución corresponde a su proyecto autorizado.
+El PDF original indica cuatro vulnerabilidades explotadas y usa Juice Shop como ejemplo. La [guía operativa](https://locano-uvg.github.io/proyecto_integrador/#enunciado) manda seguirla si difiere del PDF en la aplicación o el número de PoC: aquí son la aplicación del grupo, Secure CRM, y tres PoC confirmadas. `DET-04` y `DET-05` son cobertura WAF adicional; no se cuentan como PoC de Burp del Equipo rojo.
 
 No se agregaron exclusiones nuevas porque las rutas normales probadas no tuvieron `403`. Ya existe la excepción `id:10001` para `Host: 127.0.0.1` frente a `920350`, limitada a loopback y únicamente a ese encabezado; permite usar la URL local de la demo. El riesgo aceptado es que la regla `920350` no evalúa ese encabezado en solicitudes con ese Host, aunque las demás reglas siguen activas. Si en la repetición aparece otro falso positivo, registrar método, ruta, parámetro, ID de regla y hora; agregar solo una excepción acotada en `waf-siem/waf/REQUEST-900-EXCLUSION-RULES-BEFORE-CRS.conf` o `RESPONSE-999-EXCLUSION-RULES-AFTER-CRS.conf`, reiniciar el WAF y repetir la acción legítima y el ataque. No excluir `949110` ni desactivar el CRS.
 

@@ -1,4 +1,6 @@
-# Entrega pendiente del Equipo rojo para cerrar Hito 1
+# Lista histórica del Equipo rojo para Hito 1
+
+Esta lista se preparó antes de incorporar la [superficie de ataque y los hallazgos DAST](README.md). Para las pruebas confirmadas y clasificadas, consultar [Hito 2](../hito-2/poc-burp.md). Los puntos siguientes se conservan como registro de planificación, no como pendientes actuales.
 
 Responsables: Davis Roldán y Julio Lemus. Trabajen solo con la instancia local del grupo, a través del WAF en `http://localhost:8080`. El WAF queda en `DetectionOnly` para H0–H2.
 

@@ -71,6 +71,8 @@ El orden 1–3 representa una secuencia habitual de uso, no una comunicación di
 
 ## 3. PASTA, etapas 1 a 5
 
+> **Línea base histórica.** Los hallazgos H-01 a H-10 describen la aplicación antes de las correcciones de Hito 4. El DFD, los objetivos y los riesgos siguen vigentes como modelo; el estado actual de cada hallazgo se resume en [el informe final](../informe-final.md). H-01, H-03 (lectura) y H-04 ya no deben presentarse como fallos activos de esas rutas.
+
 ### Etapa 1 · Objetivos del negocio
 
 Secure CRM gestiona solicitudes de clientes, asignaciones y estados de tickets. Para modelar el recorrido de los datos se identificaron cuatro objetivos, numerados como en el DFD:

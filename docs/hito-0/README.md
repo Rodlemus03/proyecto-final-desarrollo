@@ -11,7 +11,7 @@ Aplicación del grupo: Secure CRM, la misma del Proyecto DAST. La [guía del cur
 | Andre Marroquín | Azul | Configuración común y controles de verificación |
 | Gabriel Paz | Azul | Observabilidad y verificación del WAF/SIEM |
 
-El DFD, STRIDE, PASTA, los casos de abuso y el informe son responsabilidad compartida. La parte asignada al Equipo rojo permanece indicada como pendiente en [Hito 1](../hito-1/README.md).
+El DFD, STRIDE, PASTA, los casos de abuso y el informe son responsabilidad compartida. La superficie y los hallazgos del Equipo rojo quedaron incorporados en [Hito 1](../hito-1/README.md).
 
 El repositorio del grupo tiene la etiqueta pública de GitHub [`proyecto-final`](https://github.com/topics/proyecto-final).
 
@@ -63,4 +63,4 @@ Para detener el entorno y conservar índices y logs: `docker compose down` desde
 
 El registro de la prueba local está en [verificacion-2026-11-03.txt](verificacion-2026-11-03.txt). La web, el health por el WAF, el login de prueba y el listado de tickets respondieron; el puerto directo `4000` no respondió. Elasticsearch y Kibana estuvieron disponibles, Filebeat conectó y Discover mostró eventos `waf-access` de las solicitudes.
 
-Esta prueba verifica el arranque y la observabilidad del H0. No incluye escaneo ni PoC del Equipo rojo. La superficie de ataque y la selección de hallazgos DAST siguen pendientes de ese equipo para cerrar H1.
+Esta prueba verifica el arranque y la observabilidad del H0. No incluye escaneo ni PoC del Equipo rojo; esas evidencias se agregaron después en H1 y H2.
