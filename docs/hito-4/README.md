@@ -39,7 +39,7 @@ El 17 de noviembre se fortaleció la prueba de SQLi para exigir `401` y ausencia
 
 ## Re-prueba de PoC con WAF en DetectionOnly
 
-El [registro técnico adicional del 17 de noviembre](verificacion-tecnica-2026-11-17.md) repite las tres PoC con la API reconstruida, conserva hora y respuesta por `:8080`, verifica los eventos de Kibana y documenta que el WAF quedó restaurado en `On`.
+El Equipo rojo repitió las tres PoC contra la API corregida con el WAF en `DetectionOnly`. La tabla registra la comparación con las respuestas de Hito 2.
 
 **Timestamp UTC:** `2026-11-17T05:36:27Z`  
 **WAF:** `SecRuleEngine DetectionOnly` — el WAF no bloquea, solo registra.  

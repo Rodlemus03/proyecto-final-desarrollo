@@ -163,7 +163,7 @@ El puerto `4000` no está publicado al host en la configuración actual del `doc
 | 2 | SQL Injection en login | `POST /api/auth/login` | 9.1 Crítica |
 | 3 | IDOR en tickets | `GET /PUT /DELETE /api/tickets/:id` | 8.1 Alta |
 
-La [lista de entrega para el Equipo rojo](PENDIENTE-RED-TEAM.md) queda cubierta con este mapa. Los PoC, escaneos ZAP/Burp, cálculo de CVSS completo y la clasificación final corresponden al Hito 2.
+Este mapa reúne la superficie de ataque y los candidatos para las pruebas ofensivas. Los PoC, escaneos ZAP/Burp, cálculo de CVSS completo y la clasificación final están documentados en [Hito 2](../hito-2/README.md).
 
 ## 5. Requisitos de seguridad verificables
 

@@ -14,7 +14,6 @@ El entorno del Proyecto Final está en [`waf-siem/`](waf-siem/README.md). Se ini
 - [Hito 3 · detección, tablero y WAF en bloqueo](docs/hito-3/README.md)
 - [Hito 4 · correcciones, regresiones y re-pruebas](docs/hito-4/README.md)
 - [Informe de trazabilidad (PDF)](docs/informe-final.pdf) · [fuente editable](docs/informe-final.md)
-- [Guion de la presentación](docs/presentacion-final.md)
 
 El `docker-compose.yml` de la raíz corresponde al laboratorio DAST anterior. Para el Proyecto Final usen `waf-siem/docker-compose.yml`.
 

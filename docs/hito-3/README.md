@@ -1,12 +1,6 @@
 # Hito 3 · Detección y respuesta del Equipo azul
 
-**Estado actualizado:** [revisión del 17 de noviembre](estado-actual.md). Las tablas y pruebas de esta página conservan resultados de la línea base anterior a Hito 4.
-
-**Estado actualizado:** [revisión del 17 de noviembre](estado-actual.md). Las tablas y pruebas de esta página conservan resultados de la línea base anterior a Hito 4.
-
 > **Cronología:** las pruebas y respuestas `200` de esta página corresponden a la línea base anterior a Hito 4. El [registro del 17 de noviembre](demo-purple-team.md) añade las tres repeticiones con WAF en `On`: SQLi obtuvo `403` y evento `DET-01`; JWT e IDOR generaron `DET-02` y `DET-03`, respectivamente. Después, Hito 4 corrigió ambos fallos de la API. No se ha documentado una demo en vivo con participación simultánea de los dos equipos.
-
-La [lista de cierre del Equipo azul](cierre-equipo-azul.md) compara cada requisito de la guía con la evidencia disponible y la parte pendiente de la demo conjunta.
 
 ## Trazabilidad de los casos de negocio
 
