@@ -18,18 +18,13 @@ export function authenticate(req: AuthedRequest, res: Response, next: NextFuncti
     return res.status(401).json({ error: 'No autenticado' });
   }
 
-  // Observa la validez de la firma sin cambiar la respuesta de este laboratorio.
+  let payload: any;
   try {
-    jwt.verify(token, process.env.JWT_SECRET || 'secret123');
+    payload = jwt.verify(token, process.env.JWT_SECRET || 'secret123');
   } catch (error) {
     if (error instanceof Error && error.message === 'invalid signature') {
       recordSecurityEvent(req, 'jwt_invalid_signature');
     }
-  }
-
-  // jwt.decode NO verifica la firma. La firma se ignora por completo.
-  const payload = jwt.decode(token) as any;
-  if (!payload) {
     return res.status(401).json({ error: 'Token inválido' });
   }
 

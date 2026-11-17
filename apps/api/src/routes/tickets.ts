@@ -54,6 +54,7 @@ ticketsRouter.get('/:id', (req: AuthedRequest, res) => {
   if (!row) return res.status(404).json({ error: 'Ticket no encontrado' });
   if (req.user && req.user.role !== 'admin' && req.user.sub !== row.assignee_id && req.user.sub !== row.created_by_id) {
     recordSecurityEvent(req, 'ticket_foreign_access', { ticketId: row.id, claimedRole: req.user.role });
+    return res.status(403).json({ error: 'Acceso denegado' });
   }
   res.json(mapTicket(row));
 });

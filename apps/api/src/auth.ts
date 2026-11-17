@@ -24,17 +24,12 @@ function toUser(row: any) {
 authRouter.post('/login', (req, res) => {
   const { username, password } = req.body ?? {};
 
-  // Query construida por concatenación de strings (A05 Injection / CWE-89).
-  // Un pentester puede inyectar:  admin' --   ó   ' OR '1'='1' --
   const hashed = weakHash(String(password ?? ''));
-  const sql = `SELECT * FROM users WHERE username = '${username}' AND password_hash = '${hashed}'`;
-
   let row: any;
   try {
-    row = db.prepare(sql).get();
+    row = db.prepare('SELECT * FROM users WHERE username = ? AND password_hash = ?').get(username, hashed);
   } catch (err: any) {
-    // Mensaje de error verboso: filtra el SQL y el detalle del motor (A02 / CWE-209).
-    return res.status(500).json({ error: 'Error en la consulta', sql, detail: String(err?.message ?? err) });
+    return res.status(500).json({ error: 'Error en la consulta' });
   }
 
   if (!row) {
