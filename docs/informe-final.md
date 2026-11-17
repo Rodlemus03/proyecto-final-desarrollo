@@ -28,6 +28,8 @@ El límite de confianza principal es cliente-WAF-API. La API decide identidad, r
 | 10 nov | [Pipeline](hito-2/evidencia-pipeline-2026-11-10.md) | Semgrep, auditoría de dependencias, SBOM CycloneDX y ZAP baseline publicaron artefactos; gate en modo `reporte`. |
 | 17 nov, 04:54-05:14 UTC | [Repetición H3](hito-3/demo-purple-team.md) | WAF `On`: SQLi `403`/CRS `942100`; JWT e IDOR detectados por eventos de API, con respuesta vulnerable `200` en esa línea base. La sesión fue ejecutada por Davis simulando el rol azul. |
 | 17 nov, 05:36 UTC | [Reprueba H4](hito-4/README.md) | Según registro del Equipo rojo, con WAF en `DetectionOnly`: SQLi `401`, JWT adulterado `401`, IDOR de lectura `403`. |
+| 17 nov, 13:53 UTC | [Verificación técnica H3](hito-3/verificacion-tecnica-2026-11-17.md) | Con la API vulnerable aún en el contenedor y WAF `On`, se repitieron las tres PoC: SQLi `403`, JWT e IDOR `200`. Kibana registró `942100`, `jwt_invalid_signature` y `ticket_foreign_access`. |
+| 17 nov, 13:57 UTC | [Verificación técnica H4](hito-4/verificacion-tecnica-2026-11-17.md) | API reconstruida y WAF en `DetectionOnly`: SQLi `401`, JWT `401`, IDOR `403`; login válido `200`. Se restauró el WAF a `On`. |
 | 17 nov | [Regresiones H4](../apps/api/src/tests/regression.test.ts) | Cinco pruebas de API pasaron localmente: tres rechazos y dos flujos válidos. La API compiló. El CI del merge H4 terminó correctamente; las regresiones se añadieron después como job propio. |
 
 ## 4. Matriz SSDLC por vulnerabilidad
@@ -50,7 +52,7 @@ La búsqueda de tickets `q` concatena SQL y las operaciones `PUT`/`DELETE` de ti
 
 ## 5. Gate, WAF y falsas alarmas
 
-El [workflow](../.github/workflows/devsecops.yml) corre en cada push y PR. Sus cuatro controles publican Semgrep, SCA, CycloneDX y ZAP baseline. El [umbral aprobado](hito-2/revision-gate.md) propone cero errores de Semgrep, cero SCA high/critical y cero alertas altas de ZAP para un futuro modo `bloqueo`. Hoy `SECURITY_GATE` permanece en `reporte` para observar una aplicación de laboratorio con fallos conocidos. Cada dependencia vulnerable que siga después de H4 necesita excepción específica con hallazgo, razón, responsable y revisión; la aceptación genérica «hasta H4» ya no basta.
+El [workflow](../.github/workflows/devsecops.yml) corre en cada push y PR. Sus cuatro controles publican Semgrep, SCA, CycloneDX y ZAP baseline; se añadió también un job de regresión de API. El [umbral aprobado](hito-2/revision-gate.md) propone cero errores de Semgrep, cero SCA high/critical y cero alertas altas de ZAP para un futuro modo `bloqueo`. Hoy `SECURITY_GATE` permanece en `reporte` para observar una aplicación de laboratorio con fallos conocidos. El [SCA actual](hito-2/sca-2026-11-17.md) cuenta **19 high y 6 critical** en dependencias de producción; esos avisos requieren corrección o excepciones específicas. La aceptación genérica «hasta H4» ya no cubre por sí sola el estado posterior.
 
 El WAF queda configurado en `On` para H3 con CRS activo. En el laboratorio se comprobó el `403` de SQLi y respuestas `200` de flujos normales. La exclusión `10001` retira solo la evaluación de `Host: 127.0.0.1` en la regla `920350`; no desactiva el CRS. No se observó un falso positivo adicional que justifique otra exclusión. JWT e IDOR requieren la autorización de la API y fueron corregidos en H4.
 
@@ -69,4 +71,4 @@ El [registro de H4](hito-4/README.md) identifica la herramienta, resume los prom
 - SQLi ofrece la demo completa: ataque -> `DET-01` -> WAF `403` -> corrección en la API -> misma PoC rechazada con WAF en observación.
 - Los fallos lógicos de JWT e IDOR deben corregirse en la API. Un bloqueo genérico del WAF sobre rutas legítimas produciría falsas alarmas.
 
-**Antes de subir a Canvas:** realizar la demo conjunta Red-Blue descrita en [estado de H3](hito-3/estado-actual.md), guardar capturas actuales de Actions/SBOM y Kibana, verificar la nueva corrida del job de regresión, incorporar la respuesta auténtica de la asistencia si existe y revisar este informe con los cuatro integrantes. El PDF derivado de este archivo se entrega en Canvas con el enlace al repositorio; no consta aquí que se haya realizado esa entrega.
+**Antes de subir a Canvas:** realizar la demo conjunta Red-Blue descrita en [estado de H3](hito-3/estado-actual.md), guardar capturas actuales de Actions/SBOM y Kibana, verificar la nueva corrida del job de regresión, incorporar la respuesta auténtica de la asistencia si existe y revisar este informe con los cuatro integrantes. Las repeticiones técnicas individuales de H3/H4 ya están documentadas; no reemplazan la demo evaluada. El PDF derivado de este archivo se entrega en Canvas con el enlace al repositorio; no consta aquí que se haya realizado esa entrega.
