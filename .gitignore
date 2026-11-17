@@ -1,4 +1,7 @@
 node_modules/
+.corepack/
+.pnpm-store/
+tmp/
 dist/
 .next/
 out/

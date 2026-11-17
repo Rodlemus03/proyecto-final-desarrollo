@@ -47,8 +47,7 @@ ticketsRouter.get('/', (req, res) => {
 });
 
 // GET /api/tickets/:id
-// Sin verificación de propiedad ni rol (A01 Broken Access Control / IDOR / CWE-639).
-// Cualquier usuario autenticado (incluso 'viewer') lee cualquier ticket por id.
+// H4: la lectura requiere rol admin, autoría o asignación del ticket.
 ticketsRouter.get('/:id', (req: AuthedRequest, res) => {
   const row = db.prepare(`${SELECT} WHERE t.id = ?`).get(req.params.id) as any;
   if (!row) return res.status(404).json({ error: 'Ticket no encontrado' });

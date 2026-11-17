@@ -33,6 +33,8 @@ Los tres PoC confirmados en H2 y detectados en H3 fueron corregidos en la API. L
 Tests  3 passed (3)
 ```
 
+El 17 de noviembre se fortaleció la prueba de SQLi para exigir `401` y ausencia de token; se añadieron pruebas de login válido y de acceso legítimo del administrador a su ticket. Resultado local posterior: **5 pruebas aprobadas y compilación TypeScript correcta**. El workflow incluye ahora un job `Pruebas de regresión (API)` para que las cinco se ejecuten en los siguientes push/PR. Esta ampliación no reemplaza la re-prueba manual por el WAF.
+
 ---
 
 ## Re-prueba de PoC con WAF en DetectionOnly
@@ -50,6 +52,8 @@ Los ataques fallan por las correcciones en el código de la API.
 ---
 
 ## Auditoría del diff
+
+El registro siguiente conserva los prompts resumidos y el diff auditado del trabajo original. No contiene la respuesta literal completa de la herramienta; debe agregarse a partir del historial auténtico si está disponible. Esta limitación se declara también en el [informe final](../informe-final.md).
 
 ### Herramienta utilizada
 Claude Code (Anthropic) — modelo claude-fable-5-2.

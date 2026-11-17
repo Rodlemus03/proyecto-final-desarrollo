@@ -6,9 +6,7 @@ export interface AuthedRequest extends Request {
   user?: { sub: number; username: string; role: string };
 }
 
-// Verificación de JWT ROTA (A07 Authentication Failures / CWE-347).
-// Se decodifica el token SIN validar la firma: cualquiera puede forjar
-// un token con el rol que quiera (p.ej. cambiar "role":"viewer" -> "admin").
+// H4: la firma se valida antes de confiar en la identidad y el rol del token.
 export function authenticate(req: AuthedRequest, res: Response, next: NextFunction) {
   const header = req.headers.authorization || '';
   const bearer = header.startsWith('Bearer ') ? header.slice(7) : null;
